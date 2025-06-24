@@ -12,7 +12,7 @@ function ideasApp() {
 
     async fetchIdeas() {
       try {
-        const response = await fetch('http://localhost:8000/ideas');
+        const response = await fetch('https://ideas-jar.onrender.com/ideas');
         if (response.ok) {
           this.ideas = await response.json();
         } else {
@@ -41,7 +41,7 @@ function ideasApp() {
 
     async deleteIdea(id) {
       try {
-        const response = await fetch(`http://localhost:8000/ideas/${id}`, {
+        const response = await fetch(`https://ideas-jar.onrender.com/ideas/${id}`, {
           method: 'DELETE',
         });
 
@@ -60,7 +60,7 @@ function ideasApp() {
         if (this.editIndex !== null) {
           // Update existing idea
           const id = this.ideas[this.editIndex].id;
-          const response = await fetch(`http://localhost:8000/ideas/${id}`, {
+          const response = await fetch(`https://ideas-jar.onrender.com/ideas/${id}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ function ideasApp() {
           }
         } else {
           // Create new idea
-          const response = await fetch('http://localhost:8000/ideas', {
+          const response = await fetch('https://ideas-jar.onrender.com/ideas', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
