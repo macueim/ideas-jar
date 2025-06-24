@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 import enum
 import logging
 import psycopg2
-import psycopg2
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -22,10 +21,19 @@ load_dotenv()
 
 # Database Configuration
 DATABASE_URL = os.getenv("DATABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 logger.info(f"Using database URL: {DATABASE_URL}")
 
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL environment variable is not set")
+
+# For Supabase, convert the URL to a PostgreSQL connection string
+if DATABASE_URL.startswith("https://"):
+    # Extract the host from the Supabase URL
+    supabase_host = DATABASE_URL.replace("https://", "")
+    # Create a PostgreSQL connection string
+    DATABASE_URL = f"postgresql://postgres:{SUPABASE_KEY}@db.{supabase_host}:6543/postgres"
+    logger.info(f"Converted Supabase URL to: {DATABASE_URL}")
 
 # Configure SQLAlchemy engine with proper parameters
 engine = create_engine(
