@@ -65,212 +65,241 @@
   </style>
 </head>
 <body class="bg-gray-50 font-sans overflow-x-hidden" x-data="ideasApp()" x-init="init()">
-  <!-- Status Bar -->
-  <div class="status-bar"></div>
+<!-- Status Bar -->
+<div class="status-bar"></div>
 
-  <!-- Header with Gradient -->
-  <div class="gradient-bg text-white px-6 pt-6 pb-8 relative overflow-hidden">
-    <!-- Background Pattern -->
-    <div class="absolute inset-0 opacity-10">
-      <div class="absolute top-0 left-0 w-40 h-40 bg-white rounded-full -translate-x-20 -translate-y-20"></div>
-      <div class="absolute bottom-0 right-0 w-32 h-32 bg-white rounded-full translate-x-16 translate-y-16"></div>
-    </div>
-
-    <div class="relative z-10">
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-3">
-          <div class="bg-white/20 backdrop-blur-sm p-3 rounded-2xl">
-            <i class="fas fa-lightbulb text-2xl text-yellow-300"></i>
-          </div>
-          <div>
-            <h1 class="text-2xl font-bold">Ideas Jar</h1>
-            <p class="text-white/80 text-sm">Capture your brilliant moments</p>
-          </div>
-        </div>
-
-        <!-- Profile Avatar -->
-        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-          <i class="fas fa-user text-white/80"></i>
-        </div>
-      </div>
-
-      <!-- Stats Cards -->
-      <div class="grid grid-cols-2 gap-4 mb-6">
-        <div class="glass-effect rounded-2xl p-4">
-          <div class="text-2xl font-bold" x-text="ideas.length"></div>
-          <div class="text-white/80 text-sm">Total Ideas</div>
-        </div>
-        <div class="glass-effect rounded-2xl p-4">
-          <div class="text-2xl font-bold" x-text="ideas.filter(i => i.is_voice).length"></div>
-          <div class="text-white/80 text-sm">Voice Notes</div>
-        </div>
-      </div>
-
-      <!-- Search Bar -->
-      <div class="relative">
-        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <i class="fas fa-search text-gray-400"></i>
-        </div>
-        <input
-          x-model="searchQuery"
-          type="text"
-          placeholder="Search your ideas..."
-          class="w-full pl-12 pr-12 py-4 bg-white rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 search-focus"
-          :class="{ 'search-focus': searchQuery }"
-        >
-        <button
-          x-show="searchQuery"
-          @click="searchQuery = ''"
-          class="absolute inset-y-0 right-0 pr-4 flex items-center"
-        >
-          <i class="fas fa-times text-gray-400 hover:text-gray-600"></i>
-        </button>
-      </div>
-    </div>
+<!-- Header with Gradient -->
+<div class="gradient-bg text-white px-6 pt-6 pb-8 relative overflow-hidden">
+  <!-- Background Pattern -->
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute top-0 left-0 w-40 h-40 bg-white rounded-full -translate-x-20 -translate-y-20"></div>
+    <div class="absolute bottom-0 right-0 w-32 h-32 bg-white rounded-full translate-x-16 translate-y-16"></div>
   </div>
 
-  <!-- Ideas List -->
-  <div class="px-6 py-6 pb-24">
-    <!-- Filter Chips -->
-    <div class="flex gap-3 mb-6 overflow-x-auto pb-2">
-      <button
-        @click="activeFilter = 'all'"
-        :class="activeFilter === 'all' ? 'bg-indigo-100 text-indigo-700 border-indigo-200' : 'bg-white text-gray-600 border-gray-200'"
-        class="px-4 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition-colors"
-      >
-        <i class="fas fa-list mr-2"></i>All Ideas
-      </button>
-      <button
-        @click="activeFilter = 'voice'"
-        :class="activeFilter === 'voice' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-white text-gray-600 border-gray-200'"
-        class="px-4 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition-colors"
-      >
-        <i class="fas fa-microphone mr-2"></i>Voice
-      </button>
-      <button
-        @click="activeFilter = 'text'"
-        :class="activeFilter === 'text' ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-white text-gray-600 border-gray-200'"
-        class="px-4 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition-colors"
-      >
-        <i class="fas fa-keyboard mr-2"></i>Text
-      </button>
+  <div class="relative z-10">
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-3">
+        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-2xl">
+          <i class="fas fa-lightbulb text-2xl text-yellow-300"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold">Ideas Jar</h1>
+          <p class="text-white/80 text-sm">Capture your brilliant moments</p>
+        </div>
+      </div>
+
+      <!-- Profile Avatar -->
+      <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+        <i class="fas fa-user text-white/80"></i>
+      </div>
     </div>
 
-    <!-- Ideas Grid -->
-    <div class="space-y-4" x-show="filteredIdeas().length > 0">
-      <template x-for="idea in filteredIdeas()" :key="idea.id">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 card-hover idea-enter">
-          <div class="p-5">
-            <div class="flex items-start justify-between mb-3">
-              <div class="flex-1 mr-4">
-                <p class="text-gray-800 leading-relaxed" x-text="idea.content"></p>
-              </div>
-              <div class="flex items-center gap-2">
-                <button @click="editIdea(idea)" class="w-8 h-8 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-100 transition-colors">
-                  <i class="fas fa-pen text-xs"></i>
-                </button>
-                <button @click="deleteIdea(idea.id)" class="w-8 h-8 bg-red-50 text-red-600 rounded-full flex items-center justify-center hover:bg-red-100 transition-colors">
-                  <i class="fas fa-trash text-xs"></i>
-                </button>
-              </div>
-            </div>
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <div class="glass-effect rounded-2xl p-4">
+        <div class="text-2xl font-bold" x-text="ideas.length"></div>
+        <div class="text-white/80 text-sm">Total Ideas</div>
+      </div>
+      <div class="glass-effect rounded-2xl p-4">
+        <div class="text-2xl font-bold" x-text="ideas.filter(i => i.is_voice).length"></div>
+        <div class="text-white/80 text-sm">Voice Notes</div>
+      </div>
+    </div>
 
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
+    <!-- Search Bar -->
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+        <i class="fas fa-search text-gray-400"></i>
+      </div>
+      <input
+              x-model="searchQuery"
+              type="text"
+              placeholder="Search your ideas..."
+              class="w-full pl-12 pr-12 py-4 bg-white rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 search-focus"
+              :class="{ 'search-focus': searchQuery }"
+      >
+      <button
+              x-show="searchQuery"
+              @click="searchQuery = ''"
+              class="absolute inset-y-0 right-0 pr-4 flex items-center"
+      >
+        <i class="fas fa-times text-gray-400 hover:text-gray-600"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Ideas List -->
+<div class="px-6 py-6 pb-24">
+  <!-- Filter Chips -->
+  <div class="flex gap-3 mb-6 overflow-x-auto pb-2">
+    <button
+            @click="activeFilter = 'all'"
+            :class="activeFilter === 'all' ? 'bg-indigo-100 text-indigo-700 border-indigo-200' : 'bg-white text-gray-600 border-gray-200'"
+            class="px-4 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition-colors"
+    >
+      <i class="fas fa-list mr-2"></i>All Ideas
+    </button>
+    <button
+            @click="activeFilter = 'voice'"
+            :class="activeFilter === 'voice' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-white text-gray-600 border-gray-200'"
+            class="px-4 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition-colors"
+    >
+      <i class="fas fa-microphone mr-2"></i>Voice
+    </button>
+    <button
+            @click="activeFilter = 'text'"
+            :class="activeFilter === 'text' ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-white text-gray-600 border-gray-200'"
+            class="px-4 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition-colors"
+    >
+      <i class="fas fa-keyboard mr-2"></i>Text
+    </button>
+  </div>
+
+  <!-- Ideas Grid -->
+  <div class="space-y-4" x-show="filteredIdeas().length > 0">
+    <template x-for="idea in filteredIdeas()" :key="idea.id">
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 card-hover idea-enter">
+        <div class="p-5">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1 mr-4">
+              <p class="text-gray-800 leading-relaxed" x-text="idea.content"></p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button @click="editIdea(idea)" class="w-8 h-8 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-100 transition-colors">
+                <i class="fas fa-pen text-xs"></i>
+              </button>
+              <button @click="deleteIdea(idea.id)" class="w-8 h-8 bg-red-50 text-red-600 rounded-full flex items-center justify-center hover:bg-red-100 transition-colors">
+                <i class="fas fa-trash text-xs"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
                 <span x-show="!idea.is_voice" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
                   <i class="fas fa-keyboard mr-1.5"></i>Text
                 </span>
-                <span x-show="idea.is_voice" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700">
+              <span x-show="idea.is_voice" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700">
                   <i class="fas fa-microphone mr-1.5"></i>Voice
                 </span>
+            </div>
+            <span class="text-xs text-gray-500" x-text="formatDate(idea.created_at)"></span>
+          </div>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <!-- Empty State -->
+  <div x-show="filteredIdeas().length === 0" class="text-center py-16">
+    <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <i class="fas fa-lightbulb text-2xl text-gray-400"></i>
+    </div>
+    <h3 class="text-lg font-semibold text-gray-800 mb-2">No ideas found</h3>
+    <p class="text-gray-500 mb-6">Start capturing your brilliant thoughts!</p>
+    <button @click="openModal()" class="bg-indigo-600 text-white px-6 py-3 rounded-full font-medium hover:bg-indigo-700 transition-colors">
+      Add Your First Idea
+    </button>
+  </div>
+</div>
+
+<!-- Floating Action Button -->
+<button @click="openModal()" class="floating-action w-14 h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105">
+  <i class="fas fa-plus text-xl"></i>
+</button>
+
+<!-- Modal -->
+<div x-show="showModal" x-transition.opacity class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-4">
+  <div
+          @click.outside="closeModal()"
+          x-transition:enter="transition ease-out duration-300"
+          x-transition:enter-start="transform translate-y-full sm:scale-95 opacity-0"
+          x-transition:enter-end="transform translate-y-0 sm:scale-100 opacity-100"
+          x-transition:leave="transition ease-in duration-200"
+          x-transition:leave-start="transform translate-y-0 sm:scale-100 opacity-100"
+          x-transition:leave-end="transform translate-y-full sm:scale-95 opacity-0"
+          class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden"
+  >
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-100">
+      <h2 class="text-xl font-bold text-gray-800" x-text="editIndex !== null ? 'Edit Idea' : 'New Idea'"></h2>
+      <button @click="closeModal()" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
+        <i class="fas fa-times text-gray-600"></i>
+      </button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="p-6">
+      <div class="mb-6">
+        <label class="block text-sm font-semibold text-gray-700 mb-3">What's your idea?</label>
+        <div class="relative">
+            <textarea
+                    x-model="form.content"
+                    rows="4"
+                    placeholder="Describe your brilliant idea here... or use voice recording below"
+                    class="w-full border border-gray-200 rounded-2xl p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+            ></textarea>
+        </div>
+      </div>
+
+      <!-- Voice Recording Section -->
+      <div class="mb-6">
+        <label class="block text-sm font-semibold text-gray-700 mb-3">Voice Recording</label>
+        <div class="bg-gray-50 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <button
+                      @click="toggleRecording()"
+                      :class="isRecording ? 'bg-red-500 hover:bg-red-600' : 'bg-indigo-500 hover:bg-indigo-600'"
+                      class="w-12 h-12 text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105"
+              >
+                <i :class="isRecording ? 'fas fa-stop' : 'fas fa-microphone'" class="text-lg"></i>
+              </button>
+              <div>
+                <div class="font-medium text-gray-800" x-text="isRecording ? 'Recording...' : 'Tap to record'"></div>
+                <div class="text-sm text-gray-500" x-text="isRecording ? 'Tap stop when finished' : 'Voice input will replace text above'"></div>
               </div>
-              <span class="text-xs text-gray-500" x-text="formatDate(idea.created_at)"></span>
+            </div>
+            <div x-show="isRecording" class="flex items-center gap-1">
+              <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+              <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
+              <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse" style="animation-delay: 0.4s"></div>
             </div>
           </div>
         </div>
-      </template>
-    </div>
-
-    <!-- Empty State -->
-    <div x-show="filteredIdeas().length === 0" class="text-center py-16">
-      <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-        <i class="fas fa-lightbulb text-2xl text-gray-400"></i>
       </div>
-      <h3 class="text-lg font-semibold text-gray-800 mb-2">No ideas found</h3>
-      <p class="text-gray-500 mb-6">Start capturing your brilliant thoughts!</p>
-      <button @click="openModal()" class="bg-indigo-600 text-white px-6 py-3 rounded-full font-medium hover:bg-indigo-700 transition-colors">
-        Add Your First Idea
-      </button>
-    </div>
-  </div>
 
-  <!-- Floating Action Button -->
-  <button @click="openModal()" class="floating-action w-14 h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105">
-    <i class="fas fa-plus text-xl"></i>
-  </button>
+      <div class="mb-6">
+        <label class="flex items-center p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100 transition-colors">
+          <input type="checkbox" x-model="form.is_voice" class="rounded text-indigo-600 focus:ring-indigo-500 h-5 w-5" readonly>
+          <div class="ml-4">
+            <div class="font-medium text-gray-800">Voice Input</div>
+            <div class="text-sm text-gray-500">Automatically marked when using voice recording</div>
+          </div>
+          <i class="fas fa-microphone ml-auto text-gray-400"></i>
+        </label>
+      </div>
 
-  <!-- Modal -->
-  <div x-show="showModal" x-transition.opacity class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-4">
-    <div
-      @click.outside="closeModal()"
-      x-transition:enter="transition ease-out duration-300"
-      x-transition:enter-start="transform translate-y-full sm:scale-95 opacity-0"
-      x-transition:enter-end="transform translate-y-0 sm:scale-100 opacity-100"
-      x-transition:leave="transition ease-in duration-200"
-      x-transition:leave-start="transform translate-y-0 sm:scale-100 opacity-100"
-      x-transition:leave-end="transform translate-y-full sm:scale-95 opacity-0"
-      class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden"
-    >
-      <!-- Modal Header -->
-      <div class="flex items-center justify-between p-6 border-b border-gray-100">
-        <h2 class="text-xl font-bold text-gray-800" x-text="editIndex !== null ? 'Edit Idea' : 'New Idea'"></h2>
-        <button @click="closeModal()" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
-          <i class="fas fa-times text-gray-600"></i>
+      <div class="flex gap-3">
+        <button @click="closeModal()" class="flex-1 px-6 py-3 border border-gray-200 rounded-2xl text-gray-600 font-medium hover:bg-gray-50 transition-colors">
+          Cancel
+        </button>
+        <button @click="submitIdea()" class="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-2xl font-medium hover:bg-indigo-700 transition-colors">
+          <span x-text="editIndex !== null ? 'Update' : 'Save Idea'"></span>
         </button>
       </div>
-
-      <!-- Modal Content -->
-      <div class="p-6">
-        <div class="mb-6">
-          <label class="block text-sm font-semibold text-gray-700 mb-3">What's your idea?</label>
-          <textarea
-            x-model="form.content"
-            rows="4"
-            placeholder="Describe your brilliant idea here..."
-            class="w-full border border-gray-200 rounded-2xl p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
-          ></textarea>
-        </div>
-
-        <div class="mb-6">
-          <label class="flex items-center p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100 transition-colors">
-            <input type="checkbox" x-model="form.is_voice" class="rounded text-indigo-600 focus:ring-indigo-500 h-5 w-5">
-            <div class="ml-4">
-              <div class="font-medium text-gray-800">Voice Input</div>
-              <div class="text-sm text-gray-500">Mark this as a voice-recorded idea</div>
-            </div>
-            <i class="fas fa-microphone ml-auto text-gray-400"></i>
-          </label>
-        </div>
-
-        <div class="flex gap-3">
-          <button @click="closeModal()" class="flex-1 px-6 py-3 border border-gray-200 rounded-2xl text-gray-600 font-medium hover:bg-gray-50 transition-colors">
-            Cancel
-          </button>
-          <button @click="submitIdea()" class="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-2xl font-medium hover:bg-indigo-700 transition-colors">
-            <span x-text="editIndex !== null ? 'Update' : 'Save Idea'"></span>
-          </button>
-        </div>
-      </div>
     </div>
   </div>
+</div>
 
-  <!-- Toast Notification -->
-  <div x-show="showToast" x-transition class="fixed top-4 left-4 right-4 z-60 mx-auto max-w-sm">
-    <div class="bg-green-500 text-white px-4 py-3 rounded-2xl shadow-lg flex items-center">
-      <i class="fas fa-check-circle mr-3"></i>
-      <span x-text="toastMessage"></span>
-    </div>
+<!-- Toast Notification -->
+<div x-show="showToast" x-transition class="fixed top-4 left-4 right-4 z-60 mx-auto max-w-sm">
+  <div class="bg-green-500 text-white px-4 py-3 rounded-2xl shadow-lg flex items-center">
+    <i class="fas fa-check-circle mr-3"></i>
+    <span x-text="toastMessage"></span>
   </div>
+</div>
 
 <script>
   function ideasApp() {
@@ -283,17 +312,13 @@
       toastMessage: '',
       form: { content: '', is_voice: false },
       editIndex: null,
+      isRecording: false,
+      mediaRecorder: null,
+      audioChunks: [],
 
       init() {
-        // Load sample data for demonstration
-        this.ideas = [
-          { id: 1, content: 'Create a revolutionary mobile app that helps people organize their creative thoughts and ideas seamlessly', created_at: new Date(), is_voice: false },
-          { id: 2, content: 'Start a weekly newsletter about emerging technology trends and their impact on society', created_at: new Date(Date.now() - 86400000), is_voice: false },
-          { id: 3, content: 'Design a mobile app prototype for connecting local community members through shared interests', created_at: new Date(Date.now() - 2 * 86400000), is_voice: false },
-          { id: 4, content: 'Learn to play the guitar and compose original music inspired by nature sounds', created_at: new Date(Date.now() - 3 * 86400000), is_voice: true },
-          { id: 5, content: 'Develop a sustainable garden using vertical farming techniques in urban spaces', created_at: new Date(Date.now() - 5 * 86400000), is_voice: true },
-          { id: 6, content: 'Write a series of short stories exploring the intersection of technology and human emotions', created_at: new Date(Date.now() - 7 * 86400000), is_voice: false },
-        ];
+        // Initialize with empty ideas array
+        this.ideas = [];
 
         // Attempt to fetch from API if available
         this.fetchIdeas();
@@ -319,7 +344,7 @@
         // Apply search filter
         if (this.searchQuery) {
           filtered = filtered.filter(i =>
-            i.content.toLowerCase().includes(this.searchQuery.toLowerCase())
+                  i.content.toLowerCase().includes(this.searchQuery.toLowerCase())
           );
         }
 
@@ -337,6 +362,7 @@
         this.editIndex = null;
         this.form = { content: '', is_voice: false };
         this.showModal = true;
+        this.stopRecording(); // Ensure recording is stopped when opening modal
       },
 
       editIdea(idea) {
@@ -346,6 +372,77 @@
           is_voice: idea.is_voice
         };
         this.showModal = true;
+        this.stopRecording(); // Ensure recording is stopped when editing
+      },
+
+      async toggleRecording() {
+        if (this.isRecording) {
+          this.stopRecording();
+        } else {
+          await this.startRecording();
+        }
+      },
+
+      async startRecording() {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          this.mediaRecorder = new MediaRecorder(stream);
+          this.audioChunks = [];
+
+          this.mediaRecorder.ondataavailable = (event) => {
+            this.audioChunks.push(event.data);
+          };
+
+          this.mediaRecorder.onstop = () => {
+            this.processRecording();
+          };
+
+          this.mediaRecorder.start();
+          this.isRecording = true;
+          this.showToast('Recording started...');
+        } catch (error) {
+          console.error('Error accessing microphone:', error);
+          this.showToast('Unable to access microphone. Please check permissions.');
+        }
+      },
+
+      stopRecording() {
+        if (this.mediaRecorder && this.isRecording) {
+          this.mediaRecorder.stop();
+          this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+          this.isRecording = false;
+        }
+      },
+
+      async processRecording() {
+        if (this.audioChunks.length === 0) return;
+
+        const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
+
+        // For now, we'll simulate speech-to-text conversion
+        // In a real app, you'd send this to a speech recognition service
+        this.simulateSpeechToText(audioBlob);
+      },
+
+      simulateSpeechToText(audioBlob) {
+        // Simulate processing time
+        this.showToast('Processing voice recording...');
+
+        setTimeout(() => {
+          // Simulate transcribed text
+          const sampleTranscriptions = [
+            "This is a voice recorded idea about creating something amazing.",
+            "I had a brilliant thought about improving user experience.",
+            "Voice recording captured: Need to remember this important concept.",
+            "Speaking my idea out loud: This could be a game-changing feature.",
+            "Voice note: Research shows that verbal expression enhances creativity."
+          ];
+
+          const transcription = sampleTranscriptions[Math.floor(Math.random() * sampleTranscriptions.length)];
+          this.form.content = transcription;
+          this.form.is_voice = true;
+          this.showToast('Voice recorded and transcribed!');
+        }, 2000);
       },
 
       deleteIdea(id) {
